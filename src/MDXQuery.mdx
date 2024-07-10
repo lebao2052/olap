@@ -1,0 +1,73 @@
+﻿-- Câu 1: Liệt kê số lần tham gia thế vận hội Olympic Games các vận động viên có năm sinh bằng 1900.SE
+SELECT [Measures].[FACT Count] on columns,
+[DIM Athlete].[Athlete Full Name].Members on Rows
+From [Olympic DWH]
+Where [DIM Athelete].[Athelete Year Birth].&[1990];
+
+-- Câu 2: Liệt kê số lần tham gia thế vận hội Olympic Games mùa hè của các vận động viên trong năm 2016 
+SELECT [Measures].[FACT Count] on columns,
+[DIM Athlete].[Athlete Full Name].Members, [Measures].[FACT Count] > 0
+From [Olympic DWH]
+Where CrossJoin[DIM Time].[Game Season].&[Summer],[DIM Time].[Game Year].&[2016]);
+
+-- Câu 3: Tổng số vận động viên đã tham gia vào thế vận hội Olympic Games 2020 tại Nhật Bản 
+SELECT [Measures].[FACT Count] on columns,
+[DIM Location].[Game Location].&[Japan] on Rows
+From [Olympic DWH]
+Where [DIM Time].[Game Year].&[2020];
+
+-- Câu 4: Liệt kê tổng số vận động viên tham gia môn 1500 mét xe lăn (nam) 
+Select [Measures].[FACT Count] on columns,  
+[DIM Game].[Event Title].&[1,500 meters Wheelchair Men] on  
+Rows  
+From [Olympic DW]; 
+
+-- Câu 5: Liệt kê số lần tham gia thế vận hội Olympic Games các vận động viên tại Brazil.
+SELECT 
+[Measures].[FACT Count] ON COLUMNS, 
+FILTER ([DIM Athlete].[Athlete Full Name, [Measures].[FACT Count] >0) ON 
+ROWS 
+FROM [OLYMPIC DWH] 
+WHERE [DIM Location].[Game Location].&[Brazil]; 
+
+-- Câu 6: Số huy chương vàng đạt được theo từng bộ môn của các quốc gia. 
+SELECT 
+[Measures].[FACT Count] ON COLUMNS, 
+FILTER ([DIM Country].[Country Name].[Country Name].Memebers * [Discipline 
+Title]. [Discipline Title].Memebers, [Measures].[FACT Count] >0) ON ROWS 
+FROM [OLYMPIC DWH] 
+WHERE [FACT].[Medal Type].&[GOLD] 
+
+-- Câu 7: Liệt kê danh sách vận động viên có thứ hạng là 2 trong giải Boxing nam ở thế vận hội Olympic Games Tokyo 2020. 
+SELECT 
+[Measures].[FACT Count] ON COLUMNS, 
+NONEMPTY([DIM Athlete].[Athlete Full Name].Members) ON ROWS 
+FROM [Olympic DWH] 
+WHERE  
+( 
+[FACT].[Rank Position].&[2], 
+[DIM Game].[Discipline Title].&[Boxing], 
+[DIM Time].[Game Year].&[2020]
+)
+
+-- Câu 8: Những vận động viên Việt Nam đã từng tham gia thi đấu tại các kỳ Olympic 
+SELECT 
+[Measures].[FACT Count] ON COLUMNS, 
+NONEMPTY([DIM Athlete].[Athlete Full Name].Members) ON ROWS 
+FROM [Olympic DWH] 
+WHERE 
+( [DIM Country].[Country Name].&[Vietnam])
+
+-- Câu 9: Quốc gia dành được nhiều huy vàng nhất từ năm 1990 đến năm 2000. (Loại truy vấn: Slice and dice) 
+SELECT 
+[Measures].[FACT Count] ON COLUMNS, 
+FILTER( 
+[DIM Country].[Country Name].[Country Name].Members * [DIM Game].[Discipline 
+Title].[Discipline Title].Members, 
+[Measures].[FACT Count] > 0 
+) ON ROWS 
+FROM [Olympic DWH] 
+WHERE (
+[FACT].[Medal Type].&[GOLD], 
+[DIM Time].[Game Year].[1990] : [DIM Time].[Game Year].[2000] )
+
